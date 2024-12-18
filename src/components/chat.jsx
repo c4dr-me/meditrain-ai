@@ -5,6 +5,7 @@ import DNA from "./dna";
 import InputBar from "./inputbar";
 import { MdOutlineQuestionAnswer } from "react-icons/md";
 import PropTypes from "prop-types";
+import DOMPurify from "dompurify";
 
 const Chat = ({ mousePosition }) => {
   const [messages, setMessages] = useState([]);
@@ -91,48 +92,51 @@ const Chat = ({ mousePosition }) => {
 
       {hasSentQuery && (
         <div className="w-full flex-grow mt-10 overflow-y-auto flex flex-col justify-start z-0 pb-20">
-          {messages.map((message, index) => (
-            <div key={index} className="mb-auto">
-              <div
-                className="flex flex-row-reverse items-center mb-2 w-full"
-                aria-label="User query"
-              >
-                <CiUser size={20} className="text-blue-400 ml-2" />
-                <div className="text-white px-3 py-2 rounded-lg w-full text-right">
-                  {message.query}
-                </div>
-              </div>
-              <div className="flex items-center w-full" aria-label="AI response">
-                <FaRobot size={20} className="text-green-400 mr-2" />
-                <div className="border border-solid border-gray-400/20 text-white rounded-2xl p-4 shadow-md mb-4 w-full">
-                  <div className="flex items-center border-b-2 border-gray-400/20 font-mono antialiased mb-2">
-                    <MdOutlineQuestionAnswer className="mr-2" /> Answer
+          {messages.map((message, index) => {
+            const sanitizedResponse = DOMPurify.sanitize(message.response);
+            return (
+              <div key={index} className="mb-auto">
+                <div
+                  className="flex flex-row-reverse items-center mb-2 w-full"
+                  aria-label="User query"
+                >
+                  <CiUser size={20} className="text-blue-400 ml-2" />
+                  <div className="text-white px-3 py-2 rounded-lg w-full text-right">
+                    {message.query}
                   </div>
-                  {message.loading ? (
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                      <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                      <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                      <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                      <div className="h-4 bg-gray-700 rounded mb"></div>
+                </div>
+                <div className="flex items-center w-full" aria-label="AI response">
+                  <FaRobot size={20} className="text-green-400 mr-2" />
+                  <div className="border border-solid border-gray-400/20 text-white rounded-2xl p-4 shadow-md mb-4 w-full">
+                    <div className="flex items-center border-b-2 border-gray-400/20 font-mono antialiased mb-2">
+                      <MdOutlineQuestionAnswer className="mr-2" /> Answer
                     </div>
-                  ) : (
-                    <div>
-                      {message.response}
-                      <button
-                        onClick={() => handleTextToSpeech(message.response)}
-                                          className="ml-2 text-blue-500"
-                                          title="Listen to response"
-                                          aria-label="Listen to response"
-                      >
-                        🔊
-                      </button>
-                    </div>
-                  )}
+                    {message.loading ? (
+                      <div className="animate-pulse">
+                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                        <div className="h-4 bg-gray-700 rounded mb"></div>
+                      </div>
+                    ) : (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: sanitizedResponse }}
+                      />
+                    )}
+                    <button
+                      onClick={() => handleTextToSpeech(message.response)}
+                      className="ml-2 text-blue-500"
+                      title="Listen to response"
+                      aria-label="Listen to response"
+                    >
+                      🔊
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={chatEndRef} />
         </div>
       )}
