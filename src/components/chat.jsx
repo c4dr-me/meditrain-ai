@@ -75,7 +75,7 @@ const Chat = ({ mousePosition }) => {
             </div>
           </div>
           <h1
-            className="text-4xl font-bold mb-2 text-white w-full whitespace-nowrap"
+            className="text-4xl sm:text-2xl font-bold mb-2 text-white w-full whitespace-nowrap"
             aria-label="Welcome to MediTrain AI"
           >
             Welcome to MediTrain AI
