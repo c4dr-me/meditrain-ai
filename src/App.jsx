@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Chat from './components/chat';
+import Home from './components/Home';
+import { BrowserRouter, Routes, Route } from "react-router";
 
 function App() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -18,10 +20,21 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-black text-white overflow-y-auto">
-      <Header />
-      <Chat mousePosition={mousePosition} />
-    </div>
+
+    <BrowserRouter>
+    
+    <div className="flex flex-col min-h-screen items-center justify-center overflow-y-auto noisy">
+    
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          
+        <Route path="/chat" element={<Chat mousePosition={mousePosition} />} />
+        </Routes>
+        
+      </div>
+      
+      </BrowserRouter>
   );
 }
 

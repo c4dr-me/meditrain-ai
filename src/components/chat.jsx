@@ -56,30 +56,35 @@ const Chat = ({ mousePosition }) => {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
   const handleTextToSpeech = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utterance);
+    try {
+      const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+      // console.log("Sanitized text for speech:", sanitizedText);
+      const utterance = new SpeechSynthesisUtterance(sanitizedText);
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error("Text-to-speech error:", error);
+    }
   };
 
   return (
-    <div
+    <main
       className={`flex flex-col items-center h-full w-full p-4 overflow-hidden ${
         hasSentQuery ? "max-w-4xl mb-auto" : "max-w-md"
       }`}
     >
       {!hasSentQuery && (
         <div className="flex flex-col items-center">
-          <div className="mb-5 flex items-center justify-center h-14 w-14 rounded-full bg-gray-800">
+          <div className="mb-5 flex items-center justify-center h-14 w-14 rounded-full bg-green-800/50 ring-1 hover:scale-110 transition-transform duration-300">
             <div className="h-12 w-12 overflow-hidden rounded-full">
               <DNA mousePosition={mousePosition} />
             </div>
           </div>
           <h1
-            className="text-4xl sm:text-2xl font-bold mb-2 text-white w-full whitespace-nowrap"
+            className="text-xl md:text-4xl text-center font-bold mb-2 text-white w-full whitespace-nowrap"
             aria-label="Welcome to MediTrain AI"
           >
-            Welcome to MediTrain AI
+            Welcome to Medi<span className="text-green-400">Train  AI</span>
           </h1>
           <p
             className="text-gray-400 mb-6 text-center max-w-md"
@@ -96,44 +101,45 @@ const Chat = ({ mousePosition }) => {
             const sanitizedResponse = DOMPurify.sanitize(message.response);
             return (
               <div key={index} className="mb-auto">
-                <div
+                <section
                   className="flex flex-row-reverse items-center mb-2 w-full"
                   aria-label="User query"
                 >
                   <CiUser size={20} className="text-blue-400 ml-2" />
-                  <div className="text-white px-3 py-2 rounded-lg w-full text-right">
+                  <article className="text-white px-3 py-2 rounded-lg w-full text-right">
                     {message.query}
-                  </div>
-                </div>
-                <div className="flex items-center w-full" aria-label="AI response">
-                  <FaRobot size={20} className="text-green-400 mr-2" />
+                  </article>
+                </section>
+                <section className="flex items-center w-full" aria-label="AI response">
+                  <FaRobot size={20} className="text-green-400 mr-2 mt-auto mb-6" />
                   <div className="border border-solid border-gray-400/20 text-white rounded-2xl p-4 shadow-md mb-4 w-full">
                     <div className="flex items-center border-b-2 border-gray-400/20 font-mono antialiased mb-2">
                       <MdOutlineQuestionAnswer className="mr-2" /> Answer
                     </div>
                     {message.loading ? (
                       <div className="animate-pulse">
-                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 bg-gray-700 rounded mb"></div>
+                        <div className="h-4 bg-green-900 rounded mb-2 mt-2"></div>
+                        <div className="h-4 bg-green-900 rounded mb-2"></div>
+                        <div className="h-4 bg-green-900 rounded mb-2"></div>
+                        <div className="h-4 bg-green-900 rounded mb-2"></div>
+                        <div className="h-4 bg-green-900 rounded mb-2"></div>
                       </div>
                     ) : (
-                      <div
+                        <article
+                          className="pb-4"
                         dangerouslySetInnerHTML={{ __html: sanitizedResponse }}
                       />
                     )}
                     <button
                       onClick={() => handleTextToSpeech(message.response)}
-                      className="ml-2 text-blue-500"
+                      className="ml-2"
                       title="Listen to response"
                       aria-label="Listen to response"
                     >
                       🔊
                     </button>
                   </div>
-                </div>
+                </section>
               </div>
             );
           })}
@@ -144,7 +150,7 @@ const Chat = ({ mousePosition }) => {
       <div
         className={`w-full mb-2 ${
           hasSentQuery
-            ? " mx-auto fixed bottom-0 left-0 right-0 p-4 bg-black"
+            ? " mx-auto fixed bottom-0 left-0 right-0 p-4 bg-transparent"
             : "mt-2"
         } ${hasSentQuery ? "max-w-4xl" : "max-w-md"} px-4 py-2 rounded-lg`}
       >
@@ -153,7 +159,7 @@ const Chat = ({ mousePosition }) => {
           aria-label="Send message input"
         />
       </div>
-    </div>
+    </main>
   );
 };
 

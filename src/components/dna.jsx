@@ -10,8 +10,8 @@ const DNA = ({ mousePosition }) => {
     if (dnaRef.current) {
       const elapsedTime = clock.getElapsedTime()
       dnaRef.current.rotation.y = elapsedTime * 1
-      dnaRef.current.rotation.x = mousePosition.x * 0.5 + Math.sin(elapsedTime) * 0.2
-      dnaRef.current.rotation.z = mousePosition.y * 0.3 + Math.cos(elapsedTime) * 0.1
+      dnaRef.current.rotation.x = mousePosition.x * 0.8 + Math.sin(elapsedTime) * 0.2
+      dnaRef.current.rotation.z = mousePosition.y * 0.5 + Math.cos(elapsedTime) * 0.2
     }
   })
 
@@ -43,7 +43,7 @@ DNA.propTypes = {
 
 const DNAAnimation = ({ mousePosition }) => {
   return (
-    <Canvas camera={{ position: [0, 0, 18], fov: 65 }} antialias pixelRatio={window.devicePixelRatio}>
+    <Canvas camera={{ position: [0, 0, 18], fov: 65 }} >
       <ambientLight intensity={0.6} />
       <pointLight position={[10, 10, 10]} />
       <DNA mousePosition={mousePosition} />

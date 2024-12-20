@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { LuSendHorizontal } from "react-icons/lu";
-import { FaMicrophone } from "react-icons/fa";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import PropTypes from 'prop-types';
 
 const InputBar = ({ onSendMessage }) => {
   const [query, setQuery] = useState('');
+  const [isListening, setIsListening] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -21,6 +22,7 @@ const InputBar = ({ onSendMessage }) => {
     recognition.maxAlternatives = 1;
 
     recognition.start();
+    setIsListening(true);
 
     recognition.onresult = (event) => {
       const voiceQuery = event.results[0][0].transcript.toLowerCase();
@@ -31,10 +33,16 @@ const InputBar = ({ onSendMessage }) => {
       } else {
         setQuery(voiceQuery);
       }
+      setIsListening(false);
     };
 
     recognition.onerror = (event) => {
       console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
     };
   };
 
@@ -47,21 +55,21 @@ const InputBar = ({ onSendMessage }) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Ask a question..."
-        className="w-full bg-gray-800/40 text-white rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gray-500"
+        className="w-full bg-green-900/90 text-white rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gray-500"
         aria-label="Ask a question"
       />
       <button
         type="button"
         onClick={handleVoiceInput}
-        className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+        className="absolute right-12 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
         aria-label="Use voice input"
         title="Use voice input"
       >
-        <FaMicrophone />
+        {isListening ? <FaMicrophoneSlash className="text-red-500" /> : <FaMicrophone />}
       </button>
       <button
         type="submit"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+        className="absolute right-4 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
         aria-label="Send"
         title="Send"
       >
