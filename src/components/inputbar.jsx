@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { LuSendHorizontal } from "react-icons/lu";
-import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import { useState, lazy, Suspense } from 'react';
 import PropTypes from 'prop-types';
+
+const LuSendHorizontal = lazy(() => import("react-icons/lu").then(module => ({ default: module.LuSendHorizontal })));
+const FaMicrophone = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaMicrophone })));
+const FaMicrophoneSlash = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaMicrophoneSlash })));
 
 const InputBar = ({ onSendMessage }) => {
   const [query, setQuery] = useState('');
@@ -58,23 +60,25 @@ const InputBar = ({ onSendMessage }) => {
         className="w-full bg-green-900/90 text-white rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gray-500"
         aria-label="Ask a question"
       />
-      <button
-        type="button"
-        onClick={handleVoiceInput}
-        className="absolute right-12 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-        aria-label="Use voice input"
-        title="Use voice input"
-      >
-        {isListening ? <FaMicrophoneSlash className="text-red-500" /> : <FaMicrophone />}
-      </button>
-      <button
-        type="submit"
-        className="absolute right-4 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-        aria-label="Send"
-        title="Send"
-      >
-        <LuSendHorizontal />
-      </button>
+      <Suspense fallback={<div className="animate-pulse text-gray-400" style={{ width: 24, height: 24 }}></div>}>
+        <button
+          type="button"
+          onClick={handleVoiceInput}
+          className="absolute right-12 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+          aria-label="Use voice input"
+          title="Use voice input"
+        >
+          {isListening ? <FaMicrophoneSlash className="text-red-500" /> : <FaMicrophone />}
+        </button>
+        <button
+          type="submit"
+          className="absolute right-4 p-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+          aria-label="Send"
+          title="Send"
+        >
+          <LuSendHorizontal />
+        </button>
+      </Suspense>
     </form>
   );
 };

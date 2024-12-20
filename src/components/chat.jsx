@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
-import { FaRobot } from "react-icons/fa";
-import { CiUser } from "react-icons/ci";
-import DNA from "./dna";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import InputBar from "./inputbar";
-import { MdOutlineQuestionAnswer } from "react-icons/md";
 import PropTypes from "prop-types";
 import DOMPurify from "dompurify";
+
+const FaRobot = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaRobot })));
+const CiUser = lazy(() => import("react-icons/ci").then(module => ({ default: module.CiUser })));
+const MdOutlineQuestionAnswer = lazy(() => import("react-icons/md").then(module => ({ default: module.MdOutlineQuestionAnswer })));
+const DNA = lazy(() => import("./dna"));
 
 const Chat = ({ mousePosition }) => {
   const [messages, setMessages] = useState([]);
@@ -56,10 +57,10 @@ const Chat = ({ mousePosition }) => {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
   const handleTextToSpeech = (text) => {
     try {
       const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-      // console.log("Sanitized text for speech:", sanitizedText);
       const utterance = new SpeechSynthesisUtterance(sanitizedText);
       speechSynthesis.speak(utterance);
     } catch (error) {
@@ -77,14 +78,20 @@ const Chat = ({ mousePosition }) => {
         <div className="flex flex-col items-center">
           <div className="mb-5 flex items-center justify-center h-14 w-14 rounded-full bg-green-800/50 ring-1 hover:scale-110 transition-transform duration-300">
             <div className="h-12 w-12 overflow-hidden rounded-full">
-              <DNA mousePosition={mousePosition} />
+              <Suspense
+                fallback={
+                  <div className="h-full w-full bg-green-800 animate-pulse rounded-full"></div>
+                }
+              >
+                <DNA mousePosition={mousePosition} />
+              </Suspense>
             </div>
           </div>
           <h1
             className="text-xl md:text-4xl text-center font-bold mb-2 text-white w-full whitespace-nowrap"
             aria-label="Welcome to MediTrain AI"
           >
-            Welcome to Medi<span className="text-green-400">Train  AI</span>
+            Welcome to Medi<span className="text-green-400">Train AI</span>
           </h1>
           <p
             className="text-gray-400 mb-6 text-center max-w-md"
@@ -105,16 +112,23 @@ const Chat = ({ mousePosition }) => {
                   className="flex flex-row-reverse items-center mb-2 w-full"
                   aria-label="User query"
                 >
-                  <CiUser size={20} className="text-blue-400 ml-2" />
+                  <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                    <CiUser size={20} className="text-blue-400 ml-2" />
+                  </Suspense>
                   <article className="text-white px-3 py-2 rounded-lg w-full text-right">
                     {message.query}
                   </article>
                 </section>
                 <section className="flex items-center w-full" aria-label="AI response">
-                  <FaRobot size={20} className="text-green-400 mr-2 mt-auto mb-6" />
+                  <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                    <FaRobot size={20} className="text-green-400 mr-2 mt-auto mb-6" />
+                  </Suspense>
                   <div className="border border-solid border-gray-400/20 text-white rounded-2xl p-4 shadow-md mb-4 w-full">
                     <div className="flex items-center border-b-2 border-gray-400/20 font-mono antialiased mb-2">
-                      <MdOutlineQuestionAnswer className="mr-2" /> Answer
+                      <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                        <MdOutlineQuestionAnswer className="mr-2" />
+                      </Suspense>
+                      Answer
                     </div>
                     {message.loading ? (
                       <div className="animate-pulse">
@@ -125,8 +139,8 @@ const Chat = ({ mousePosition }) => {
                         <div className="h-4 bg-green-900 rounded mb-2"></div>
                       </div>
                     ) : (
-                        <article
-                          className="pb-4"
+                      <article
+                        className="pb-4"
                         dangerouslySetInnerHTML={{ __html: sanitizedResponse }}
                       />
                     )}

@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
-import { FaReact, FaNodeJs, FaPython } from "react-icons/fa";
-import { SiTailwindcss, SiFlask, SiLangchain } from "react-icons/si";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
+
+const FaReact = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaReact })));
+const FaNodeJs = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaNodeJs })));
+const FaPython = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaPython })));
+const SiTailwindcss = lazy(() => import("react-icons/si").then(module => ({ default: module.SiTailwindcss })));
+const SiFlask = lazy(() => import("react-icons/si").then(module => ({ default: module.SiFlask })));
+const SiLangchain = lazy(() => import("react-icons/si").then(module => ({ default: module.SiLangchain })));
 
 const Home = () => {
   useEffect(() => {
@@ -41,7 +46,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl blur-xl opacity-10 animate-pulse "></div>
           <div className="relative bg-gray-900/30 p-2 rounded-2xl ring-1 ring-green-500/20 shadow-2xl ">
             <img
-              src="/image.png"
+              src="/image.webp"
               alt="MediTrain AI Dashboard"
               className="rounded-xl w-full"
             />
@@ -54,12 +59,14 @@ const Home = () => {
           Tech Stack
         </h2>
         <div className="flex flex-wrap justify-center gap-4  lg:gap-4">
-          <FaReact size={50} className="text-blue-400" />
-          <FaNodeJs size={50} className="text-green-400" />
-          <FaPython size={50} className="text-yellow-400" />
-          <SiFlask size={50} className="text-gray-400" />
-          <SiTailwindcss size={50} className="text-teal-400" />
-          <SiLangchain size={50} className="text-blue-500" />
+          <Suspense fallback={<div className="animate-pulse text-gray-400" style={{ width: 50, height: 50 }}></div>}>
+            <FaReact size={50} className="text-blue-400" />
+            <FaNodeJs size={50} className="text-green-400" />
+            <FaPython size={50} className="text-yellow-400" />
+            <SiFlask size={50} className="text-gray-400" />
+            <SiTailwindcss size={50} className="text-teal-400" />
+            <SiLangchain size={50} className="text-blue-500" />
+          </Suspense>
         </div>
       </div>
     </main>
