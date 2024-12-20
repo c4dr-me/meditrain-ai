@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
 import { FaReact, FaNodeJs, FaPython } from "react-icons/fa";
 import { SiTailwindcss, SiFlask, SiLangchain } from "react-icons/si";
+import { useEffect } from "react";
 
 const Home = () => {
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/image.png";
+  }, []);
+
   return (
     <main className="min-w-screen overflow-hidden min-h-screen flex flex-col items-center justify-center noisy">
       <div className="container mx-auto px-4 pt-20 pb-32 text-center">
@@ -35,7 +41,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl blur-xl opacity-10 animate-pulse "></div>
           <div className="relative bg-gray-900/30 p-2 rounded-2xl ring-1 ring-green-500/20 shadow-2xl ">
             <img
-              src="./image.png"
+              src="/image.png"
               alt="MediTrain AI Dashboard"
               className="rounded-xl w-full"
             />
@@ -44,19 +50,18 @@ const Home = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-  <h2 className="text-4xl font-bold text-center text-gray-50 mb-8">
-    Tech Stack
-  </h2>
-  <div className="flex flex-wrap justify-center gap-4  lg:gap-4">
-    <FaReact size={50} className="text-blue-400" />
-    <FaNodeJs size={50} className="text-green-400" />
-    <FaPython size={50} className="text-yellow-400" />
-    <SiFlask size={50} className="text-gray-400" />
-    <SiTailwindcss size={50} className="text-teal-400" />
-    <SiLangchain size={50} className="text-blue-500" />
-  </div>
-</div>
-
+        <h2 className="text-4xl font-bold text-center text-gray-50 mb-8">
+          Tech Stack
+        </h2>
+        <div className="flex flex-wrap justify-center gap-4  lg:gap-4">
+          <FaReact size={50} className="text-blue-400" />
+          <FaNodeJs size={50} className="text-green-400" />
+          <FaPython size={50} className="text-yellow-400" />
+          <SiFlask size={50} className="text-gray-400" />
+          <SiTailwindcss size={50} className="text-teal-400" />
+          <SiLangchain size={50} className="text-blue-500" />
+        </div>
+      </div>
     </main>
   );
 };
