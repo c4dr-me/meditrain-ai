@@ -119,6 +119,7 @@ Ensure you have the following installed:
 - Virtual Patient simulation with user persona
 - Voice input with Web Speech API integration
 - Interactive UI
+- Loading skeletons, Suspense, lazy loading
 
 ---
 
