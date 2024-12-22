@@ -5,12 +5,15 @@ import DOMPurify from "dompurify";
 
 const FaRobot = lazy(() => import("react-icons/fa").then(module => ({ default: module.FaRobot })));
 const CiUser = lazy(() => import("react-icons/ci").then(module => ({ default: module.CiUser })));
-const MdOutlineQuestionAnswer = lazy(() => import("react-icons/md").then(module => ({ default: module.MdOutlineQuestionAnswer })));
+const MdOutlineQuestionAnswer = lazy(() =>
+  import("react-icons/md").then(module => ({ default: module.MdOutlineQuestionAnswer }))
+);
 const DNA = lazy(() => import("./dna"));
 
 const Chat = ({ mousePosition }) => {
   const [messages, setMessages] = useState([]);
   const [hasSentQuery, setHasSentQuery] = useState(false);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState(null);
   const chatEndRef = useRef(null);
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -58,14 +61,21 @@ const Chat = ({ mousePosition }) => {
     }
   }, [messages]);
 
-  const handleTextToSpeech = (text) => {
+  const handleTextToSpeech = (text, index) => {
     try {
       const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
       const utterance = new SpeechSynthesisUtterance(sanitizedText);
+      utterance.onstart = () => setSpeakingMessageIndex(index);
+      utterance.onend = () => setSpeakingMessageIndex(null);
       speechSynthesis.speak(utterance);
     } catch (error) {
       console.error("Text-to-speech error:", error);
     }
+  };
+
+  const stopTextToSpeech = () => {
+    speechSynthesis.cancel();
+    setSpeakingMessageIndex(null);
   };
 
   return (
@@ -97,7 +107,8 @@ const Chat = ({ mousePosition }) => {
             className="text-gray-400 mb-6 text-center max-w-md"
             aria-label="Your intelligent medical assistant with patient persona, trained to assist doctors with smart search."
           >
-            Your intelligent medical assistant with patient persona, trained to assist doctors with smart search.
+            Your intelligent medical assistant with patient persona, trained to assist doctors with
+            smart search.
           </p>
         </div>
       )}
@@ -112,20 +123,35 @@ const Chat = ({ mousePosition }) => {
                   className="flex flex-row-reverse items-center mb-2 w-full"
                   aria-label="User query"
                 >
-                  <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                  <Suspense
+                    fallback={
+                      <div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>
+                    }
+                  >
                     <CiUser size={20} className="text-blue-400 ml-2" />
                   </Suspense>
-                  <article className="text-white px-3 py-2 rounded-lg w-full text-right">
+                  <article
+                    className="text-white pr-3 pl-10 py-2 rounded-lg w-full text-right break-words overflow-wrap max-w-full"
+                    style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+                  >
                     {message.query}
                   </article>
                 </section>
                 <section className="flex items-center w-full" aria-label="AI response">
-                  <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                  <Suspense
+                    fallback={
+                      <div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>
+                    }
+                  >
                     <FaRobot size={20} className="text-green-400 mr-2 mt-auto mb-6" />
                   </Suspense>
                   <div className="border border-solid border-gray-400/20 text-white rounded-2xl p-4 shadow-md mb-4 w-full">
                     <div className="flex items-center border-b-2 border-gray-400/20 font-mono antialiased mb-2">
-                      <Suspense fallback={<div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>}>
+                      <Suspense
+                        fallback={
+                          <div className="animate-pulse h-5 w-5 bg-gray-300 rounded-full"></div>
+                        }
+                      >
                         <MdOutlineQuestionAnswer className="mr-2" />
                       </Suspense>
                       Answer
@@ -140,18 +166,29 @@ const Chat = ({ mousePosition }) => {
                       </div>
                     ) : (
                       <article
-                        className="pb-4"
                         dangerouslySetInnerHTML={{ __html: sanitizedResponse }}
                       />
                     )}
-                    <button
-                      onClick={() => handleTextToSpeech(message.response)}
-                      className="ml-2"
-                      title="Listen to response"
-                      aria-label="Listen to response"
-                    >
-                      🔊
-                    </button>
+
+                    {speakingMessageIndex === index ? (
+                      <button
+                        onClick={stopTextToSpeech}
+                        className="ml-2 text-red-500"
+                        title="Stop listening"
+                        aria-label="Stop listening"
+                      >
+                        🔇
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleTextToSpeech(message.response, index)}
+                        className="ml-2"
+                        title="Listen to response"
+                        aria-label="Listen to response"
+                      >
+                        🔊
+                      </button>
+                    )}
                   </div>
                 </section>
               </div>

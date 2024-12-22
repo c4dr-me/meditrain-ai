@@ -18,6 +18,11 @@ const InputBar = ({ onSendMessage }) => {
   };
 
   const handleVoiceInput = () => {
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      alert("Speech recognition not supported in this browser.");
+      return;
+    }
+
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
@@ -57,7 +62,7 @@ const InputBar = ({ onSendMessage }) => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Ask a question..."
-        className="w-full bg-green-900/90 text-white rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gray-500"
+        className="w-full bg-green-900/90 text-white rounded-full py-3 px-5 pr-20 focus:outline-none focus:ring-2 focus:ring-gray-500"
         aria-label="Ask a question"
       />
       <Suspense fallback={<div className="animate-pulse text-gray-400" style={{ width: 24, height: 24 }}></div>}>
